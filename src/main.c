@@ -1,10 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../library/include/dynamic_array.h"
+#include "../library/include/math_extra.h"
 
 #include "print.c"
+#include "parser.c"
 
 // https://www.ascii-code.com/
+
+void save(char *file_name, DynamicArray *text){
+	FILE *file = fopen(file_name, "w");
+	
+	for(int i=0; i<text->size; i++){
+		DynamicArray *tmp = ((DynamicArray **)text->array)[i];
+		for(int j=0; j<tmp->size; j++) fprintf(file, "%c", ((char *)tmp->array)[j]);
+		if(i+1<text->size) fprintf(file, "\n");
+	}
+	
+	fclose(file);
+
+	printf("File saved\n");
+	char buf[1000];
+	fgets(buf, sizeof(buf), stdin);
+
+	return;
+}
 
 int main(int argc, char *argv[]){
     if(argc!=2){
@@ -22,8 +42,10 @@ int main(int argc, char *argv[]){
     if(file){
         char buf;
         while(fscanf(file, "%c", &buf)!=EOF){
-            pushDynamicArray(((DynamicArray **)text->array)[text->size-1], &buf);
-            if(!((int)buf==10 || (int)buf==13)) continue;
+            if(!((int)buf==10 || (int)buf==13)){
+				pushDynamicArray(((DynamicArray **)text->array)[text->size-1], &buf);
+				continue;
+			}
 
             // if LN or CR
             DynamicArray *tmp = malloc(sizeof(DynamicArray));
@@ -34,42 +56,28 @@ int main(int argc, char *argv[]){
         fclose(file);
     }
 
+	const int LINE_PER_PAGE = 36;
+	int line = 0;
     while(1){
-        system("clear");
-        printf("1. View all\n2. View line\n3. Exit\nPick operation: ");
+		system("clear");
+		
+		printPage(text, line, LINE_PER_PAGE);
 
-        char buf[1000];
-        char *end;
-        int op = strtol(fgets(buf, sizeof(buf), stdin), &end, 10);
-        if(*end!=10 || op<1 || op>3){
-            printf("Error: Invalid operation!\n");
-            for(int i=0; i<10; i++){
-                printf("%d ", buf[i]);
-            }
-            fgets(buf, sizeof(buf), stdin);
-            system("clear");
-            continue;
-        }
-
-        switch(op){
-            case 1:
-                system("clear");
-                printAll(text, 10);
-                break;
-            case 2:
-                system("clear");
-                printf("View line: ");
-                int line = strtol(fgets(buf, sizeof(buf), stdin), &end, 10);
-                if(*end!=10){
-                    printf("Error: Not a number!\n");
-                    break;
-                }
-                printLine(text, line);
-                fgets(buf, sizeof(buf), stdin);
-                break;
-            case 3:
-                goto cleanup;
-        }
+		char buf[1000];
+		Action op = parse();
+		switch(op){
+		case ERROR: continue;
+		case QUIT: goto cleanup;
+		case SAVE:
+			save(argv[1], text);
+			break;
+		case NEXT:
+			line = min(line+LINE_PER_PAGE/2, max(0, text->size-LINE_PER_PAGE));
+			break;
+		case PREVIOUS:
+			line = max(0, line-LINE_PER_PAGE/2);
+			break;
+		}
     }
 
 cleanup:

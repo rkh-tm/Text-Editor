@@ -10,21 +10,16 @@ int printLine(DynamicArray *text, unsigned int line){
     int len = ((DynamicArray **)text->array)[line]->size;
     char *arr = ((DynamicArray **)text->array)[line]->array;
     for(int i=0; i<len; i++) printf("%c", arr[i]);
+	printf("\n");
 
     return 0;
 }
 
-int printAll(DynamicArray *text, int line){
-    char buf[1000];
-    for(int i=0; i<text->size;){
-        for(int j=i; j<i+line && j<text->size; j++){
-            printf("%d | ", j+1);
-            if(printLine(text, j)) return 1;
-        }
-        fgets(buf, sizeof(buf), stdin);
-        system("clear");
-        i += line;
-    }
-    
-    return 0;
+void printPage(DynamicArray *text, unsigned int line, const int LINE_PER_PAGE){
+	for(int i=line; i<line+LINE_PER_PAGE && i<text->size; i++){
+		printf("%d\t", i+1);
+		printLine(text, i);
+	}
+
+	return;
 }
