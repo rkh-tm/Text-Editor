@@ -9,37 +9,17 @@
 
 // https://www.ascii-code.com/
 
-void save(char *file_name, DynamicArray *text){
-	FILE *file = fopen(file_name, "w");
-	
-	for(int i=0; i<text->size; i++){
-		DynamicArray *tmp = ((DynamicArray **)text->array)[i];
-		for(int j=0; j<tmp->size; j++) fprintf(file, "%c", ((char *)tmp->array)[j]);
-		if(i+1<text->size) fprintf(file, "\n");
-	}
-	
-	fclose(file);
-
-	printf("File saved\n");
-	char buf[1000];
-	fgets(buf, sizeof(buf), stdin);
-
-	return;
-}
-
 int main(int argc, char *argv[]){
     if(argc!=2){
         printf("Error: Invalid arguments");
         return 1;
     }
 
-    DynamicArray *text = malloc(sizeof(DynamicArray));
-    *text = initDynamicArray(DYNAMIC_ARRAY);
-    pushDynamicArray(text, initDynamicArray(CHAR));
+    DynamicArray *text = initDynamicArray(DYNAMIC_ARRAY);
+	DynamicArray *tmp = initDynamicArray(CHAR);
+    pushDynamicArray(text, &tmp);
 
-    FILE *file = fopen(argv[1], "r");
-	read(text, file);
-	fclose(file);	
+	read(text, argv[1]);
 	
 	const int LINE_PER_PAGE = 36;
 	int line = 0;
@@ -53,8 +33,12 @@ int main(int argc, char *argv[]){
 		switch(op){
 		case ERROR: continue;
 		case QUIT: goto cleanup;
-		case SAVE:
-			save(argv[1], text);
+		case WRITE:
+			write(text, argv[1]);
+			system("clear");
+			printPage(text, line, LINE_PER_PAGE);
+			printf("File saved");
+			fgets(buf, sizeof(buf), stdin);
 			break;
 		case NEXT:
 			line = min(line+LINE_PER_PAGE/2, max(0, text->size-LINE_PER_PAGE));

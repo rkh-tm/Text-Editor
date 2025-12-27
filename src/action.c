@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include "../library/include/dynamic_array.h"
 
-void read(const DynamicArray *text, const FILE *file){
+void read(DynamicArray *text, char *file_name){
+	FILE *file = fopen(file_name, "r");
 	if(!text){
 		printf("Error: Missing array");
 		return;
 	}
-
 	if(!file){
 		printf("Error: Missing file");
 		return;
@@ -21,10 +21,25 @@ void read(const DynamicArray *text, const FILE *file){
 		}
 
 		// if LN or CR
-		DynamicArray *tmp = malloc(sizeof(DynamicArray));
-		*tmp = initDynamicArray(CHAR);
+		DynamicArray *tmp = initDynamicArray(CHAR);
 		pushDynamicArray(text, &tmp);
 	}
+
+	fclose(file);
+
+	return;
+}
+
+void write(DynamicArray *text, char *file_name){
+	FILE *file = fopen(file_name, "w");
+	
+	for(int i=0; i<text->size; i++){
+		DynamicArray *tmp = ((DynamicArray **)text->array)[i];
+		for(int j=0; j<tmp->size; j++) fprintf(file, "%c", ((char *)tmp->array)[j]);
+		if(i+1<text->size) fprintf(file, "\n");
+	}
+	
+	fclose(file);
 
 	return;
 }

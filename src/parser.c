@@ -2,7 +2,7 @@
 #include <string.h>
 
 typedef enum Action{
-	QUIT, SAVE, APPEND, DELETE, NEXT, PREVIOUS, ERROR
+	QUIT, WRITE, APPEND, DELETE, NEXT, PREVIOUS, ERROR
 } Action;
 
 Action parse(){
@@ -12,7 +12,7 @@ Action parse(){
 	
 	switch(buf[0]){
 		case 'q': return QUIT;
-		case 's': return SAVE;
+		case 'w': return WRITE;
 		case 'a': return APPEND;
 		case 'd': return DELETE;
 		case 'n': return NEXT;
