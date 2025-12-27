@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "../library/include/dynamic_array.h"
 
-int printLine(DynamicArray *text, unsigned int line){
+int printLine(const DynamicArray *text, const unsigned int line){
     if(line>=text->size){
         printf("Error: Out of bounds\n");
         return 1;
@@ -15,7 +15,7 @@ int printLine(DynamicArray *text, unsigned int line){
     return 0;
 }
 
-void printPage(DynamicArray *text, unsigned int line, const int LINE_PER_PAGE){
+void printPage(const DynamicArray *text, const unsigned int line, const int LINE_PER_PAGE){
 	for(int i=line; i<line+LINE_PER_PAGE && i<text->size; i++){
 		printf("%d\t", i+1);
 		printLine(text, i);

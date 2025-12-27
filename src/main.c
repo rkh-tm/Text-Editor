@@ -7,8 +7,6 @@
 #include "parser.c"
 #include "action.c"
 
-// https://www.ascii-code.com/
-
 int main(int argc, char *argv[]){
     if(argc!=2){
         printf("Error: Invalid arguments");

@@ -2,14 +2,10 @@
 #include <stdlib.h>
 #include "../library/include/dynamic_array.h"
 
-void read(DynamicArray *text, char *file_name){
+void read(DynamicArray *text, const char *file_name){
 	FILE *file = fopen(file_name, "r");
-	if(!text){
-		printf("Error: Missing array");
-		return;
-	}
-	if(!file){
-		printf("Error: Missing file");
+	if(!text || !file){
+		printf("Error: Invalid pointer\n");
 		return;
 	}
 
@@ -30,8 +26,12 @@ void read(DynamicArray *text, char *file_name){
 	return;
 }
 
-void write(DynamicArray *text, char *file_name){
+void write(DynamicArray *text, const char *file_name){
 	FILE *file = fopen(file_name, "w");
+	if(!text || !file){
+		printf("Error: Invalid pointer\n");
+		return;
+	}
 	
 	for(int i=0; i<text->size; i++){
 		DynamicArray *tmp = ((DynamicArray **)text->array)[i];
