@@ -5,6 +5,7 @@
 
 #include "print.c"
 #include "parser.c"
+#include "action.c"
 
 // https://www.ascii-code.com/
 
@@ -34,28 +35,12 @@ int main(int argc, char *argv[]){
 
     DynamicArray *text = malloc(sizeof(DynamicArray));
     *text = initDynamicArray(DYNAMIC_ARRAY);
-    DynamicArray *tmp = malloc(sizeof(DynamicArray));
-    *tmp = initDynamicArray(CHAR);
-    pushDynamicArray(text, &tmp);
+    pushDynamicArray(text, initDynamicArray(CHAR));
 
     FILE *file = fopen(argv[1], "r");
-    if(file){
-        char buf;
-        while(fscanf(file, "%c", &buf)!=EOF){
-            if(!((int)buf==10 || (int)buf==13)){
-				pushDynamicArray(((DynamicArray **)text->array)[text->size-1], &buf);
-				continue;
-			}
-
-            // if LN or CR
-            DynamicArray *tmp = malloc(sizeof(DynamicArray));
-            *tmp = initDynamicArray(CHAR);
-            pushDynamicArray(text, &tmp);
-        }
-
-        fclose(file);
-    }
-
+	read(text, file);
+	fclose(file);	
+	
 	const int LINE_PER_PAGE = 36;
 	int line = 0;
     while(1){
